@@ -1,0 +1,46 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <title>Felhasználó lista</title>
+        <style>
+            table {
+                border-spacing: 0px;
+            }
+            .highlight {
+                background-color: lightgray;
+            }
+            .fact > a {
+                font-style: italic;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Felhasználók</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Név</th>
+                <th>Email</th>
+                <th>Státusz</th>
+                <th>Létrehozva</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}" th:class="${highlighted == user.id} ? 'highlight'">
+                <td>
+                    <a href="user.html"
+                       th:text="${user.id}"
+                       th:href="@{/user/{id}(id=${user.id})}">0</a>
+                </td>
+                <td th:text="${user.displayName}">John Doe</td>
+                <td th:text="${user.email}">john.doe@mail.com</td>
+                <td th:text="${user.status}">ACTIVE</td>
+                <td th:text="${#temporals.format(user.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="add_user.html"
+           th:href="@{/addUser}">Új felhasználó</a>
+    </body>
+</html>

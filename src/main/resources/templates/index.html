@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Üdvözöllek!</title>
+</head>
+<body>
+    <h2>A legújabb bejegyzések</h2>
+    <div id="latest-posts">
+        <p th:each="post : ${latestPosts}">
+            <a href="post.html"
+               th:text="${post.title}"
+               th:href="@{/post/{id}(id=${post.id})}">Bejegyzés címe</a>
+            <span th:text="${#temporals.format(post.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</span>
+        </p>
+    </div>
+</body>
+</html>

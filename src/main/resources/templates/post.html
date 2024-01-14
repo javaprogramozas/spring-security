@@ -1,0 +1,16 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title th:text="${post.title}">Cím</title>
+</head>
+<body>
+<h1 th:text="${post.title}">Cím</h1>
+<p th:text="${post.description}"></p>
+<p>Szerző: <span th:text="${post.author.displayName}">XYZ</span></p>
+<p>Készítette: <span th:text="${#temporals.format(post.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</span></p>
+
+<a href="index.html"
+   th:href="@{/}">Vissza</a>
+
+</body>
+</html>
