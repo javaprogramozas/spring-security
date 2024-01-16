@@ -5,6 +5,11 @@
     <title>Üdvözöllek!</title>
 </head>
 <body>
+    <div style="float:right">
+        <form method="post" th:action="@{/logout}">
+            <button type="submit">Kilépés</button>
+        </form>
+    </div>
     <h2>A legújabb bejegyzések</h2>
     <div id="latest-posts">
         <p th:each="post : ${latestPosts}">

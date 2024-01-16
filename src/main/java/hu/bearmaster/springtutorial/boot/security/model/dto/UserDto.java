@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 @Entity
 @Table(name = "users", schema = "blogs")
@@ -85,5 +86,16 @@ public class UserDto {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", UserDto.class.getSimpleName() + "[", "]")
+                .add("id=" + id)
+                .add("displayName='" + displayName + "'")
+                .add("email='" + email + "'")
+                .add("status=" + status)
+                .add("createdAt=" + createdAt)
+                .toString();
     }
 }
