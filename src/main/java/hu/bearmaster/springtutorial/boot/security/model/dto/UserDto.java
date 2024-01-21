@@ -35,6 +35,8 @@ public class UserDto {
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
 
+    private String encodedPassword;
+
     public Long getId() {
         return id;
     }
@@ -73,6 +75,14 @@ public class UserDto {
 
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getEncodedPassword() {
+        return encodedPassword;
+    }
+
+    public void setEncodedPassword(String encodedPassword) {
+        this.encodedPassword = encodedPassword;
     }
 
     @Override
