@@ -4,9 +4,17 @@ CREATE TABLE blogs.users (
 	status varchar(10) NULL,
 	created_at timestamp NULL,
 	email varchar(255) NOT NULL,
+	encoded_password varchar(255) NULL,
 	CONSTRAINT users_email_uq UNIQUE (email),
 	CONSTRAINT users_pk PRIMARY KEY (id)
 );
+
+CREATE TABLE blogs.user_roles (
+	user_id int8 NOT NULL,
+	role_name varchar(10) NOT NULL
+);
+
+ALTER TABLE blogs.user_roles ADD CONSTRAINT user_roles_fk FOREIGN KEY (user_id) REFERENCES blogs.users(id);
 
 CREATE TABLE blogs.posts (
 	id int8 NOT NULL DEFAULT nextval('blogs.posts_seq'::regclass),

@@ -1,18 +1,23 @@
 package hu.bearmaster.springtutorial.boot.security.model.dto;
 
 import hu.bearmaster.springtutorial.boot.security.model.UserStatus;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 
 @Entity
@@ -36,6 +41,15 @@ public class UserDto {
     private ZonedDateTime createdAt;
 
     private String encodedPassword;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            schema = "blogs",
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role_name")
+    private Set<String> roles;
 
     public Long getId() {
         return id;
@@ -85,6 +99,14 @@ public class UserDto {
         this.encodedPassword = encodedPassword;
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -105,6 +127,7 @@ public class UserDto {
                 .add("displayName='" + displayName + "'")
                 .add("email='" + email + "'")
                 .add("status=" + status)
+                .add("roles=" + roles)
                 .add("createdAt=" + createdAt)
                 .toString();
     }
