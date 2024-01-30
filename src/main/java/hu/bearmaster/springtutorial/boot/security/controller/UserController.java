@@ -8,6 +8,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,6 +34,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
     public String getAllUsers(Model model, @SessionAttribute(required = false) Long visitedUserId) {
         List<User> users = userService.getUsers();
@@ -38,6 +43,7 @@ public class UserController {
         return "users";
     }
 
+    @PostAuthorize("#model['user'].email == authentication.name or hasRole('ADMIN')")
     @GetMapping("/user/{id}")
     public String getUserById(Model model, @PathVariable long id, HttpSession session) {
         User user = userService.getUserById(id)

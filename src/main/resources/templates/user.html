@@ -4,14 +4,14 @@
     <title>Felhasználó adatlap</title>
 </head>
 <body>
-<h1 th:text="#{userpage.header}">Felhasználó adatlap</h1>
+<h1>Felhasználó adatlap</h1>
 <div th:if="${user} == null">
     Nincs ilyen felhasználó!
 </div>
 <div th:if="${user} != null">
     <div>Név: <span th:text="${user.displayName}">John Doe</span></div>
     <div>Email: <span th:text="${user.email}">john.doe@mail.com</span></div>
-    <div>Státusz: <span th:text="#{|userpage.status.${user.status}|}">ACTIVE</span></div>
+    <div>Státusz: <span th:text="${user.status}">ACTIVE</span></div>
     <div>Létrehozva: <span th:text="${#temporals.format(user.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</span></div>
 </div>
 

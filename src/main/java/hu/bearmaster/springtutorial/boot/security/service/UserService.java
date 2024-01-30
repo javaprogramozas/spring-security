@@ -7,6 +7,7 @@ import hu.bearmaster.springtutorial.boot.security.model.vo.User;
 import hu.bearmaster.springtutorial.boot.security.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,6 +31,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //@PostAuthorize("returnObject?.email == authentication.name")
     public Optional<User> getUserById(long id) {
         return userRepository.findById(id)
                 .map(User::from);

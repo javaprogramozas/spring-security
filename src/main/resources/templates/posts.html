@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Bejegyzést lista</title>
 </head>
 <body>
-<h1>TODO befejezni!</h1>
+<h1>Bejegyzések listája</h1>
+<div id="posts">
+    <p th:if="${posts.empty}">Nincs bejegyzés amit szerkeszthetsz</p>
+    <table>
+        <tbody>
+        <tr th:each="post : ${posts}">
+            <td>
+                <a href="post.html"
+                   th:text="${post.id}"
+                   th:href="@{/post/{id}(id=${post.id})}">0</a>
+            </td>
+            <td th:text="${post.title}">Bejegyzés címe</td>
+            <td th:text="${#strings.abbreviate(post.description, 20)}">Bejegyzés leírása</td>
+            <td th:text="${post.topic}">Téma</td>
+            <td th:text="${#temporals.format(post.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</td>
+            <td><a href="edit-post.html" th:href="@{/post/{id}(id=${post.id},edit='true')}">Szerkesztés</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<p><a th:href="@{/}">Vissza</a></p>
 </body>
 </html>

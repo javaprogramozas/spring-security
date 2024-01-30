@@ -1,0 +1,34 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title th:text="${post.title}">Cím</title>
+</head>
+<body>
+<div id="register-box">
+    <form method="post" th:object="${post}" th:action="@{/post/{id}(id=${post.id})}" autocomplete="off">
+        <p>
+        <label for="title">Cím</label>
+        <input type="text" id="title" name="title" placeholder="Cím" th:field="*{title}" size="30" />
+        </p>
+        <p>
+        <label for="description">Leírás</label>
+            <textarea id="description" name="description" placeholder="Leírás" th:field="*{description}"></textarea>
+        </p>
+        <p>
+        <label for="topic">Téma</label>
+        <input type="text" id="topic" name="topic" placeholder="Téma" th:field="*{topic}" />
+        </p>
+        <p>
+        <label for="slug">URL</label>
+        <input type="text" id="slug" name="slug" placeholder="URL" th:field="*{slug}" />
+        </p>
+        <input type="hidden" name="authorId" th:field="*{author.id}" id="authorId"/>
+        <button type="submit">Mentés</button>
+    </form>
+</div>
+
+<a href="posts.html"
+   th:href="@{/posts}">Vissza</a>
+
+</body>
+</html>
