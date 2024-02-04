@@ -1,6 +1,7 @@
 package hu.bearmaster.springtutorial.boot.security.service;
 
 import hu.bearmaster.springtutorial.boot.security.model.dto.PostDto;
+import hu.bearmaster.springtutorial.boot.security.model.dto.UserDto;
 import hu.bearmaster.springtutorial.boot.security.model.exception.NotFoundException;
 import hu.bearmaster.springtutorial.boot.security.model.request.UpdatePostRequest;
 import hu.bearmaster.springtutorial.boot.security.model.vo.Post;
@@ -8,10 +9,9 @@ import hu.bearmaster.springtutorial.boot.security.repository.PostRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
@@ -49,11 +49,14 @@ public class PostService {
                 .map(Post::from);
     }
 
-    //TODO security check
     @Transactional
-    public void updatePost(long id, UpdatePostRequest post) {
+    public void updatePost(long id, UpdatePostRequest post, UserDto user) {
         PostDto postDto = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post not found with id: " + id));
+
+        if (!user.equals(postDto.getAuthor())) {
+            throw new AccessDeniedException("The current user is not the author of this post!");
+        }
 
         postDto.setTitle(post.getTitle());
         postDto.setDescription(post.getDescription());

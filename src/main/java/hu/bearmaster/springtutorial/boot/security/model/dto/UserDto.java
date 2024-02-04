@@ -14,8 +14,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -23,7 +27,7 @@ import java.util.StringJoiner;
 @Entity
 @Table(name = "users", schema = "blogs")
 @SequenceGenerator(name = "userIdGenerator", sequenceName = "users_seq", schema = "blogs", initialValue = 1, allocationSize = 1)
-public class UserDto {
+public class UserDto implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userIdGenerator")
@@ -130,5 +134,40 @@ public class UserDto {
                 .add("roles=" + roles)
                 .add("createdAt=" + createdAt)
                 .toString();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).toList();
+    }
+
+    @Override
+    public String getPassword() {
+        return encodedPassword;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return isEnabled();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return isEnabled();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return isEnabled();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return status == UserStatus.ACTIVE;
     }
 }

@@ -1,5 +1,6 @@
 package hu.bearmaster.springtutorial.boot.security.controller;
 
+import hu.bearmaster.springtutorial.boot.security.model.dto.UserDto;
 import hu.bearmaster.springtutorial.boot.security.model.exception.NotFoundException;
 import hu.bearmaster.springtutorial.boot.security.model.request.UpdatePostRequest;
 import hu.bearmaster.springtutorial.boot.security.model.vo.Post;
@@ -7,6 +8,7 @@ import hu.bearmaster.springtutorial.boot.security.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +47,8 @@ public class PostController {
     }
 
     @PostMapping("/post/{id}")
-    public String updatePost(@PathVariable long id, UpdatePostRequest post) {
-        postService.updatePost(id, post);
+    public String updatePost(@PathVariable long id, UpdatePostRequest post, @AuthenticationPrincipal UserDto user) {
+        postService.updatePost(id, post, user);
         return "redirect:/post/" + id;
     }
 }

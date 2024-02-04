@@ -7,7 +7,6 @@ import hu.bearmaster.springtutorial.boot.security.model.vo.User;
 import hu.bearmaster.springtutorial.boot.security.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -50,11 +49,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("No registered user with " + username));
         LOGGER.debug("User found: {}", userDto);
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(userDto.getEmail())
-                .password(userDto.getEncodedPassword())
-                .roles(userDto.getRoles().toArray(String[]::new))
-                .build();
+        return userDto;
     }
 
     public void createUser(CreateUserRequest createUserRequest) {
