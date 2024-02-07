@@ -22,6 +22,8 @@ public class Post {
 
     private String topic;
 
+    private boolean published;
+
     public Long getId() {
         return id;
     }
@@ -86,6 +88,14 @@ public class Post {
         this.author = author;
     }
 
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
+
     @Override
     public String toString() {
         return "Post [id=" + id + ", title=" + title + "]";
@@ -101,6 +111,7 @@ public class Post {
         post.slug = postDto.getSlug();
         post.author = User.from(postDto.getAuthor());
         post.topic = postDto.getTopic();
+        post.published = postDto.isPublished();
         return post;
     }
 }

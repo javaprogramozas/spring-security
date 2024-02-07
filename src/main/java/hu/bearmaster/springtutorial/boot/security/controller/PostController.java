@@ -14,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -36,19 +35,44 @@ public class PostController {
         return "posts";
     }
 
-    @PreAuthorize("not #edit or hasRole('EDITOR')")
+    @PreAuthorize("hasPermission(#id, 'hu.bearmaster.springtutorial.boot.security.model.vo.Post', 'READ')")
     @GetMapping("/post/{id}")
-    public String getPostById(Model model, @PathVariable long id, @RequestParam(name = "edit", required = false, defaultValue = "false") boolean edit) {
+    public String getPostById(Model model, @PathVariable long id) {
         Post post = postService.getPostById(id)
                 .orElseThrow(() -> new NotFoundException("Post not found with id: " + id));
         model.addAttribute("post", post);
 
-        return edit ? "post-edit" : "post";
+        return "post";
     }
 
+    @PreAuthorize("hasRole('EDITOR')")
+    @GetMapping(value = "/post/new")
+    public String createNewPost(Model model) {
+        model.addAttribute("post", new Post());
+        return "post-edit";
+    }
+
+    @PreAuthorize("hasRole('EDITOR')")
+    @PostMapping("/post")
+    public String createNewPost(UpdatePostRequest post, @AuthenticationPrincipal UserDto user) {
+        long postId = postService.createPost(post, user);
+        return "redirect:/post/" + postId;
+    }
+
+    @PreAuthorize("hasPermission(#id, 'hu.bearmaster.springtutorial.boot.security.model.vo.Post', 'WRITE')")
+    @GetMapping(value = "/post/{id}", params = {"edit=true"})
+    public String getPostByIdForEdit(Model model, @PathVariable long id) {
+        Post post = postService.getPostById(id)
+                .orElseThrow(() -> new NotFoundException("Post not found with id: " + id));
+        model.addAttribute("post", post);
+
+        return "post-edit";
+    }
+
+    @PreAuthorize("hasPermission(#id, 'hu.bearmaster.springtutorial.boot.security.model.vo.Post', 'WRITE')")
     @PostMapping("/post/{id}")
-    public String updatePost(@PathVariable long id, UpdatePostRequest post, @AuthenticationPrincipal UserDto user) {
-        postService.updatePost(id, post, user);
+    public String updatePost(@PathVariable long id, UpdatePostRequest post) {
+        postService.updatePost(id, post);
         return "redirect:/post/" + id;
     }
 }

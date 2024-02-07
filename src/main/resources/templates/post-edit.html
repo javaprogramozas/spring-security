@@ -5,7 +5,8 @@
 </head>
 <body>
 <div id="register-box">
-    <form method="post" th:object="${post}" th:action="@{/post/{id}(id=${post.id})}" autocomplete="off">
+    <form method="post" th:object="${post}" th:with="baseUrl=(${post.id != null} ? '/post/{id}' : '/post')"
+          th:action="@{${baseUrl}(id=${post.id})}" autocomplete="off">
         <p>
         <label for="title">Cím</label>
         <input type="text" id="title" name="title" placeholder="Cím" th:field="*{title}" size="30" />
@@ -21,6 +22,10 @@
         <p>
         <label for="slug">URL</label>
         <input type="text" id="slug" name="slug" placeholder="URL" th:field="*{slug}" />
+        </p>
+        <p>
+            <label for="published">Nyilvános?</label>
+            <input type="checkbox" id="published" name="published" th:field="*{published}" />
         </p>
         <input type="hidden" name="authorId" th:field="*{author.id}" id="authorId"/>
         <button type="submit">Mentés</button>

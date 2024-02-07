@@ -20,10 +20,12 @@
             <td th:text="${#strings.abbreviate(post.description, 20)}">Bejegyzés leírása</td>
             <td th:text="${post.topic}">Téma</td>
             <td th:text="${#temporals.format(post.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</td>
+            <td th:text="${post.published ? 'Nyilvános' : 'Rejtett'}">Nyilvános</td>
             <td><a href="edit-post.html" th:href="@{/post/{id}(id=${post.id},edit='true')}">Szerkesztés</a></td>
         </tr>
         </tbody>
     </table>
+    <p><a th:href="@{/post/new}">Új bejegyzés</a></p>
 </div>
 <p><a th:href="@{/}">Vissza</a></p>
 </body>

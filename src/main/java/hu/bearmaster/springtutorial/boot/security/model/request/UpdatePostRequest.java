@@ -12,6 +12,8 @@ public class UpdatePostRequest {
 
     private long authorId;
 
+    private boolean published;
+
     public String getTitle() {
         return title;
     }
@@ -42,5 +44,21 @@ public class UpdatePostRequest {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(long authorId) {
+        this.authorId = authorId;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 }

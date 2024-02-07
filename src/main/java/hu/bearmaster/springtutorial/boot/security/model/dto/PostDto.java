@@ -38,8 +38,14 @@ public class PostDto {
     private UserDto author;
 
     private String topic;
+
+    private boolean published;
     
     public PostDto() {
+    }
+
+    public PostDto(boolean published) {
+        this.published = published;
     }
     
     public PostDto(String title, String description, ZonedDateTime createdAt, int likes, String slug) {
@@ -118,6 +124,14 @@ public class PostDto {
 
     public void setAuthor(UserDto author) {
         this.author = author;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
     }
 
     @Override
