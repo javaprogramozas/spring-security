@@ -19,5 +19,6 @@
             <span th:text="${#temporals.format(post.createdAt, 'yyyy. MMMM dd. HH:mm')}">2023. május 1. 16:48</span>
         </p>
     </div>
+    <p>Aktuális felhasználó: <span th:text="${authentication?.name}">Név</span></p>
 </body>
 </html>

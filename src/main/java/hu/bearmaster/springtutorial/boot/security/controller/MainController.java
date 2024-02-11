@@ -1,6 +1,7 @@
 package hu.bearmaster.springtutorial.boot.security.controller;
 
 import hu.bearmaster.springtutorial.boot.security.service.PostService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,9 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, Authentication authentication) {
         model.addAttribute("latestPosts", postService.getLatestPosts());
+        model.addAttribute("authentication", authentication);
         return "index";
     }
 

@@ -27,6 +27,7 @@ public class WebSecurityConfig {
 			.formLogin(login -> login
 					.loginPage("/login")
 					.permitAll())
+			.oauth2Login(oauth -> oauth.loginPage("/login"))
 			.logout(logout -> logout
 					.logoutUrl("/logout")
 					.logoutSuccessUrl("/login?logout")
