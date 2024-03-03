@@ -1,5 +1,9 @@
 package hu.bearmaster.springtutorial.boot.security.config;
 
+import org.apache.catalina.connector.Connector;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,7 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @EnableMethodSecurity
@@ -24,7 +27,8 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize -> authorize
+		http.requiresChannel(channel -> channel.anyRequest().requiresSecure())
+				.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/user/registration", "/favicon.ico", "/error", "/").permitAll()
 				.requestMatchers(RegexRequestMatcher.regexMatcher("/login\\?.*")).permitAll()
 				.requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasRole("ADMIN")
@@ -59,6 +63,19 @@ public class WebSecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+
+	@Bean
+	public ServletWebServerFactory servletContainer(@Value("${server.port.http}") int httpPort) {
+		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
+		tomcat.addAdditionalTomcatConnectors(createStandardConnector(httpPort));
+		return tomcat;
+	}
+
+	private Connector createStandardConnector(int httpPort) {
+		Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+		connector.setPort(httpPort);
+		return connector;
 	}
 
 }
