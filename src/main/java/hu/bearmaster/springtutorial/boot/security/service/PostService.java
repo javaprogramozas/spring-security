@@ -7,12 +7,9 @@ import hu.bearmaster.springtutorial.boot.security.model.request.UpdatePostReques
 import hu.bearmaster.springtutorial.boot.security.model.vo.Post;
 import hu.bearmaster.springtutorial.boot.security.repository.PostRepository;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostService.class);
     private static final Example<PostDto> PUBLISHED_POST_EXAMPLE = Example.of(new PostDto(true));
 
     private final PermissionService permissionService;
@@ -57,7 +53,7 @@ public class PostService {
     }
 
     @Transactional
-    public long createPost(UpdatePostRequest post, UserDto user) {
+    public Post createPost(UpdatePostRequest post, UserDto user) {
         PostDto postDto = new PostDto();
         postDto.setTitle(post.getTitle());
         postDto.setDescription(post.getDescription());
@@ -69,11 +65,11 @@ public class PostService {
 
         PostDto savedPost = postRepository.save(postDto);
         updatePermissions(savedPost);
-        return savedPost.getId();
+        return Post.from(savedPost);
     }
 
     @Transactional
-    public void updatePost(long id, UpdatePostRequest post) {
+    public Post updatePost(long id, UpdatePostRequest post) {
         PostDto postDto = postRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Post not found with id: " + id));
 
@@ -84,6 +80,7 @@ public class PostService {
         postDto.setPublished(post.isPublished());
 
         updatePermissions(postDto);
+        return Post.from(postDto);
     }
 
     private void updatePermissions(PostDto post) {

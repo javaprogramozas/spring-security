@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="jquery-3.7.1.min.js"></script>
+  <script src="jquery-url.min.js"></script>
+  <script src="jquery.cookie.js"></script>
+  <script src="luxon.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+      $(function() {
+        fetchPost($.url('?id'))
+          .done(function(post) {
+            $("#pTitle").text(post.title);
+            $("#pDesc").text(post.description);
+            $("#pAuthor").text(post.author.displayName);
+            $("#pCreatedAt").text(DateTime.fromISO(post.createdAt).toLocaleString(DateTime.DATETIME_FULL));
+          })
+          .fail(function() {
+            $("#container").replaceWith("<h1 style=\"color:red\">Nincs jogod megnézni ezt az oldalt!</h1>")
+          });
+      });
+  </script>
+    <title>Cím</title>
+</head>
+<body>
+<div id="container">
+  <h1 id="pTitle">Cím</h1>
+  <p id="pDesc"></p>
+  <p>Szerző: <span id="pAuthor">XYZ</span></p>
+  <p>Készítette: <span id="pCreatedAt">2023. május 1. 16:48</span></p>
+</div>
+<a href="/">Vissza</a>
+
+</body>
+</html>

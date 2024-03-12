@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
         return userDto;
     }
 
-    public void createUser(CreateUserRequest createUserRequest) {
+    public User createUser(CreateUserRequest createUserRequest) {
         // TODO check email uniqueness
         UserDto userDto = new UserDto();
         userDto.setDisplayName(createUserRequest.getDisplayName());
@@ -61,6 +61,6 @@ public class UserService implements UserDetailsService {
         userDto.setCreatedAt(ZonedDateTime.now());
         userDto.setEncodedPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 
-        userRepository.save(userDto);
+        return User.from(userRepository.save(userDto));
     }
 }

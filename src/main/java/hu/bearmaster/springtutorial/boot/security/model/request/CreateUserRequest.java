@@ -18,7 +18,7 @@ public class CreateUserRequest {
     private String email;
 
     @NotBlank
-    @Password
+    //@Password
     private String password;
 
     @NotBlank

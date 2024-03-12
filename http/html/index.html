@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="jquery.cookie.js"></script>
+    <script src="luxon.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+      function logoutAndRefresh() {
+        logout().always(function() {
+          window.location.replace("/");
+        });
+      }
+      function gotoLogin() {
+        window.location.replace("/login.html");
+      }
+      $(function(){
+        fetchPosts()
+          .done(function(posts) {
+            const rows = posts.map(paraRow);
+            $("#latest-posts").html(rows);
+          });
+        fetchCurrentUser()
+          .done(function(user) {
+            $("#userName").text(user.email);
+            $("#logout-btn").text("Kilépés");
+            $("#logout-btn").on("click", logoutAndRefresh);
+          })
+          .fail(function() {
+            $("#userName").text("anonymous");
+            $("#logout-btn").text("Belépés");
+            $("#logout-btn").on("click", gotoLogin);
+          });
+      });
+    </script>
+    <title>Üdvözöllek!</title>
+</head>
+<body>
+<div style="float:right">
+    <button id="logout-btn">Button!</button>
+</div>
+<h2>A legújabb bejegyzések</h2>
+<div id="latest-posts">
+</div>
+<p>Aktuális felhasználó: <span id="userName">Név</span></p>
+</body>
+</html>

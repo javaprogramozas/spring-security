@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="jquery-url.min.js"></script>
+    <script src="jquery.cookie.js"></script>
+    <script src="luxon.min.js"></script>
+    <script src="jquery.serialize-object.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+      $(function() {
+        $("#register-form").on("submit", function(event) {
+            event.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: "/user",
+                data: $(this).serializeJSON(),
+                contentType: "application/json",
+                success: function(result) {
+                    window.location.replace("/login.html?register");
+                },
+                error: function() {
+                    $("#register-box>div").show();
+                }
+            });
+        });
+      });
+    </script>
+    <title>Regisztráció!</title>
+</head>
+<body>
+<h2>Regisztráció</h2>
+<div id="register-box">
+    <div style="color:red;display:none">Regisztrációs hiba</div>
+    <form id="register-form" method="post" autocomplete="off">
+        <p>
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" placeholder="Email">
+        </p>
+        <p>
+            <label for="name">Név</label>
+            <input type="text" id="name" name="displayName" placeholder="Név">
+        </p>
+        <p>
+            <label for="password">Jelszó</label>
+            <input type="password" id="password" name="password" placeholder="Jelszó">
+        </p>
+        <p>
+            <label for="passwordAgain">Jelszó újra</label>
+            <input type="password" id="passwordAgain" name="passwordAgain" placeholder="Jelszó még egyszer">
+        </p>
+        <button type="submit">Regisztráció</button>
+    </form>
+    <a href="/login.html">Belépés</a>
+</div>
+</body>
+</html>
