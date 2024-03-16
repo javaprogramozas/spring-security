@@ -90,6 +90,37 @@ spring.ssl.bundle.pem.bearmaster.keystore.private-key=classpath:server.enc.key
 spring.ssl.bundle.pem.bearmaster.keystore.private-key-password=${server.key.password}
 ```
 
+### A saját tanúsítvény hitelesítő tanúsítvány hozzáadása a Java Trust Store-hoz
+
+Első lépésben a PEM formátumú tanúsítványt át kell alakítanunk DER formátumra:
+```
+openssl x509 -in ca.pem -inform pem -out ca.der -outform der
+```
+
+Az így elkészült DER formátumú tanúsítványt validálhatjuk a Java `keytool` nevezetű programjával:
+
+```
+keytool -v -printcert -file ca.der
+```
+
+Majd ezt be tudjuk importálni a gépünkre telepített Java saját Trust Store-jába:
+
+```
+keytool -importcert -cacerts -storepass changeit -alias ownca -file ca.der
+```
+
+Az `-alias` paraméter értéke egy egyedi név kell hogy legyen,
+ami a tanúsítványt azonosítja a Trust Store-ban. A `-storepass` értéke jelen esetben az alapértelmezett 
+Trust Store jelszó.
+A parancs futtatása ki fogja listázni a tanúsítvány tartalmát, majd rákérdez, hogy tényleg akarjuk-e telepíteni,
+írjuk be hogy `yes` a folytatáshoz.
+
+A sikeres telepítést az alábbi paranccsal tudjuk leellenőrizni:
+
+```
+keytool -list -cacerts -alias ownca
+```
+
 ### Megjegyzések
 
 Ha szeretnénk látni, mit tartalmaz egy tanúsítvány, használhatjuk az alábbi parancsot:

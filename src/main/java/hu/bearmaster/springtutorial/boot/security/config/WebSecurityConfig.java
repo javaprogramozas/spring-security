@@ -7,7 +7,6 @@ import hu.bearmaster.springtutorial.boot.security.authentication.SpaCsrfTokenReq
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,7 +55,9 @@ public class WebSecurityConfig {
                         .successHandler(formHandler)
                         .failureHandler(formHandler)
                         .permitAll())
-                .oauth2Login(oauth -> oauth.loginPage("/login")
+                .oauth2Login(oauth -> oauth
+						.successHandler((req, resp, auth) -> resp.sendRedirect("https://bearmaster.hu"))
+						.failureHandler((req, resp, ex) -> resp.sendRedirect("https://bearmaster.hu/login.html?error"))
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userAuthoritiesMapper(myAuthMapper())))
                 .logout(logout -> logout
