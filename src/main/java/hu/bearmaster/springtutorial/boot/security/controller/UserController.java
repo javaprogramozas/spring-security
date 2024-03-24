@@ -10,8 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,11 +54,10 @@ public class UserController {
         if (authentication.getPrincipal() instanceof UserDto userDto) {
             return User.from(userDto);
         }
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-            OAuth2User oAuth2User = oauthToken.getPrincipal();
+        if (authentication instanceof JwtAuthenticationToken oauthToken) {
             User user = new User();
-            user.setDisplayName(oAuth2User.getAttribute("name"));
-            user.setEmail(oAuth2User.getAttribute("email"));
+            user.setDisplayName(oauthToken.getTokenAttributes().get("name").toString());
+            user.setEmail(oauthToken.getTokenAttributes().get("email").toString());
             user.setStatus(UserStatus.ACTIVE);
             return user;
         }

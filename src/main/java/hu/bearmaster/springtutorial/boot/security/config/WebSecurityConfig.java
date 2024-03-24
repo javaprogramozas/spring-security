@@ -2,10 +2,10 @@ package hu.bearmaster.springtutorial.boot.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.bearmaster.springtutorial.boot.security.authentication.CsrfCookieFilter;
-import hu.bearmaster.springtutorial.boot.security.authentication.MyFormLoginHandler;
 import hu.bearmaster.springtutorial.boot.security.authentication.SpaCsrfTokenRequestHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +16,8 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,7 +28,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -37,7 +41,6 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
-		MyFormLoginHandler formHandler = new MyFormLoginHandler(objectMapper);
 		CookieCsrfTokenRepository csrfRepository = new CookieCsrfTokenRepository();
 		csrfRepository.setCookieCustomizer(cookie -> cookie
 				.domain("bearmaster.hu")
@@ -50,39 +53,16 @@ public class WebSecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(login -> login
-                        .loginPage("/login")
-                        .successHandler(formHandler)
-                        .failureHandler(formHandler)
-                        .permitAll())
-                .oauth2Login(oauth -> oauth
-						.successHandler((req, resp, auth) -> resp.sendRedirect("https://bearmaster.hu"))
-						.failureHandler((req, resp, ex) -> resp.sendRedirect("https://bearmaster.hu/login.html?error"))
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userAuthoritiesMapper(myAuthMapper())))
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-						.logoutSuccessHandler(formHandler)
-                        .permitAll())
+				.oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.csrfTokenRepository(csrfRepository)
 						.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
 				.addFilterAfter(new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling(exceptionHandling ->
-						exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED)));
+						exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(UNAUTHORIZED)))
+				.sessionManagement(session -> session.disable());
 
 		return http.build();
-	}
-
-	private GrantedAuthoritiesMapper myAuthMapper() {
-		return authorities -> {
-			for (GrantedAuthority authority : authorities) {
-				if (authority instanceof OAuth2UserAuthority) {
-					return Set.of(new SimpleGrantedAuthority("ROLE_USER"));
-				}
-			}
-			return authorities;
-		};
 	}
 
 	@Bean
@@ -102,4 +82,23 @@ public class WebSecurityConfig {
 		return source;
 	}
 
+	@Bean
+	public JwtAuthenticationConverter jwtAuthenticationConverter() {
+
+		Converter<Jwt, Collection<GrantedAuthority>> grantedAuthoritiesConverter = jwt -> {
+			Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+			return ((List<String>) realmAccess.get("roles")).stream()
+					.filter(role -> role.startsWith("blog_"))
+					.map(role -> new SimpleGrantedAuthority("ROLE_" + role.substring(5).toUpperCase()))
+					.map(this::downCast)
+					.toList();
+		};
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+		return jwtAuthenticationConverter;
+	}
+
+	private GrantedAuthority downCast(SimpleGrantedAuthority sga) {
+		return sga;
+	}
 }

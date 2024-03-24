@@ -8,9 +8,8 @@
     <script src="app.js"></script>
     <script>
       function logoutAndRefresh() {
-        logout().always(function() {
-          window.location.replace("/");
-        });
+        sessionStorage.removeItem(AUTH_TOKENS);
+        window.location.replace("/");
       }
       function gotoLogin() {
         window.location.replace("/login.html");
